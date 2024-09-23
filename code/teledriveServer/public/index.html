@@ -1,0 +1,141 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Console</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .round-btn, .long-btn {
+            transition: all 0.3s ease; /* Smooth transition for visual effects */
+        }
+        .round-btn {
+            border-radius: 50%; /* Make buttons round */
+            width: 100px; /* Fixed width */
+            height: 100px; /* Fixed height */
+            font-size: 14px; /* Text size */
+            color: white; /* Text color */
+            background-color: #56afd8; /* Baby blue background */
+        }
+        .long-btn {
+            width: 80%; /* Long width */
+            height: 65px; /* Standard height */
+            font-size: 14px; /* Larger text */
+            color: white; /* Text color */
+            background-color: #FF0000; /* Red background */
+            border-radius: 20px; /* Slightly rounded corners */
+        }
+        body {
+            background-image: url('wheel.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            background-size: 100% 100%;
+        }
+        .active {
+            transform: scale(1.1); /* Slightly enlarge the button */
+            box-shadow: 0 0 15px #FF0000; /* Add a red shadow */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Driving Console</h1>
+        <br><br>
+        <div class="row">
+            <div class="col-sm-4 text-center">
+            </div>
+            <div class="col-sm-4 text-center">
+                <button id="btnW" class="btn round-btn" onclick="sendKeyPress('1')">Speed Up (W)</button>
+            </div>
+            <div class="col-sm-4 text-center">
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-sm-4 text-center">
+                <button id="btnA" class="btn round-btn" onclick="sendKeyPress('3')">Turn Left (A)</button>
+            </div>
+            <div class="col-sm-4 text-center">
+                <button id="btnS" class="btn round-btn" onclick="sendKeyPress('5')">Straighten (S)</button>
+            </div>
+            <div class="col-sm-4 text-center">
+                <button id="btnD" class="btn round-btn" onclick="sendKeyPress('4')">Turn Right (D)</button>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-sm-4 text-center">
+            </div>
+            <div class="col-sm-4 text-center">
+                <button id="btnX" class="btn round-btn" onclick="sendKeyPress('0')">Slow Down (X)</button>
+            </div>
+            <div class="col-sm-4 text-center">
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col-sm-4 text-center">
+            </div>
+            <div class="col-sm-4 text-center">
+                <button id="btn " class="btn long-btn" onclick="sendKeyPress('2')">Stop<br>(SPACE)</button>
+            </div>
+            <div class="col-sm-4 text-center">
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        function sendKeyPress(key) {
+            fetch('/keypress', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ key: key })
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('feedback').textContent = `Last key pressed: ${key}`;
+                console.log(data); // Optionally log data to console instead of alert
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        document.addEventListener('keydown', function(event) {
+            const key = event.key.toUpperCase();
+            const button = document.getElementById(`btn${key}`);
+            if (button) {
+                button.classList.add('active');
+            }
+            switch(event.key.toUpperCase()) {
+                case 'W':
+                    document.getElementById('btnW').click();
+                    break;
+                case 'A':
+                    document.getElementById('btnA').click();
+                    break;
+                case 'S':
+                    document.getElementById('btnS').click();
+                    break;
+                case 'D':
+                    document.getElementById('btnD').click();
+                    break;
+                case 'X':
+                    document.getElementById('btnX').click();
+                    break;
+                case ' ':
+                    document.getElementById('btn ').click();
+                    break;
+            }
+        });
+
+        document.addEventListener('keyup', function(event) {
+            const key = event.key.toUpperCase();
+            const button = document.getElementById(`btn${key}`);
+            if (button) {
+                button.classList.remove('active');
+            }
+        });
+
+    </script>
+</body>
+</html>
